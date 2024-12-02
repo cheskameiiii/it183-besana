@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Doctors{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Doctors</h2>
+        <a href="{% url 'doctor_create' %}" class="btn btn-primary">Add Doctor</a>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Specialist</th>
+                <th>Gender</th>
+                <th>Contact</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doctor in doctors %}
+            <tr>
+                <td>{{ doctor.id }}</td>
+                <td>{{ doctor.last_name }}</td>
+                <td>{{ doctor.first_name }}</td>
+                <td>{{ doctor.specialist }}</td>
+                <td>{{ doctor.gender }}</td>
+                <td>{{ doctor.contact_number }}</td>
+                <td>
+                    <a href="{% url 'doctor_update' doctor.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{% url 'doctor_delete' doctor.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

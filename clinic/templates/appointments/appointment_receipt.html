@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Appointment Receipt{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-left">Appointment Receipt</h2>
+    <div class="card shadow-sm p-4 text-left w-100">
+        <h4><strong>Appointment ID:</strong> {{ appointment.appointment_id }}</h4>
+        <p><strong>Doctor:</strong> {{ appointment.doctor }}</p>
+        <p><strong>Patient:</strong> {{ appointment.patient }}</p>
+        <p><strong>Date:</strong> {{ appointment.appointment_date }}</p>
+        <p><strong>Status:</strong> {{ appointment.status }}</p>
+        <p><strong>Reason:</strong> {{ appointment.reason }}</p>
+        <button id="print" class="btn btn-primary mt-4">Download Receipt</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script>
+    document.getElementById('print').addEventListener('click', function () {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Header
+        doc.setFontSize(20);
+        doc.setFont("helvetica", "bold");
+        doc.text("Clinic Name", 105, 15, null, null, "center");
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text("123 Health St, Wellness City", 105, 22, null, null, "center");
+        doc.text("Phone: (123) 456-7890 | Email: clinic@health.com", 105, 28, null, null, "center");
+        doc.text("-------------------------------------------------------------", 105, 34, null, null, "center");
+
+        // Appointment Receipt Title
+        let y = 40;
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.text("Appointment Receipt", 105, y, null, null, "center");
+
+        // Appointment Details
+        y += 15;
+        doc.setFontSize(12);
+
+        // Appointment ID
+        doc.setFont("helvetica", "bold");
+        doc.text("Appointment ID:", 10, y);
+        doc.setFont("helvetica", "normal");
+        doc.text("{{ appointment.appointment_id }}", 50, y);
+
+        // Doctor
+        y += 8;
+        doc.setFont("helvetica", "bold");
+        doc.text("Doctor:", 10, y);
+        doc.setFont("helvetica", "normal");
+        doc.text("{{ appointment.doctor }}", 50, y);
+
+        // Patient
+        y += 8;
+        doc.setFont("helvetica", "bold");
+        doc.text("Patient:", 10, y);
+        doc.setFont("helvetica", "normal");
+        doc.text("{{ appointment.patient }}", 50, y);
+
+        // Date
+        y += 8;
+        doc.setFont("helvetica", "bold");
+        doc.text("Date:", 10, y);
+        doc.setFont("helvetica", "normal");
+        doc.text("{{ appointment.appointment_date }}", 50, y);
+
+        // Status
+        y += 8;
+        doc.setFont("helvetica", "bold");
+        doc.text("Status:", 10, y);
+        doc.setFont("helvetica", "normal");
+        doc.text("{{ appointment.status }}", 50, y);
+
+        // Reason
+        y += 8;
+        doc.setFont("helvetica", "bold");
+        doc.text("Reason:", 10, y);
+        doc.setFont("helvetica", "normal");
+        doc.text("{{ appointment.reason }}", 50, y);
+
+        // Footer
+        y += 20;
+        doc.text("-------------------------------------------------------------", 105, y, null, null, "center");
+        y += 8;
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "italic");
+        doc.text("This is a system-generated receipt. For any discrepancies, contact the clinic.", 105, y, null, null, "center");
+
+        // Save the PDF
+        doc.save(`Appointment_Receipt_{{ appointment.appointment_id }}.pdf`);
+    });
+</script>
+
+{% endblock %}

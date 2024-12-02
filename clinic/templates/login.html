@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <h2>Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+    {% if form.errors %}
+        <div class="error-messages">
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // Check if the user is authenticated
+    document.addEventListener('DOMContentLoaded', () => {
+        const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+        if (isAuthenticated) {
+            // Redirect to the dashboard if the user is authenticated
+            window.location.href = "{% url 'dashboard' %}";
+        }
+    });
+</script>
+{% endblock %}

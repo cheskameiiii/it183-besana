@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Prescription Receipt{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Prescription Receipt</h2>
+    <div class="card shadow-sm p-4 w-100">
+        <h4><strong>Prescription ID:</strong> {{ prescription.prescription_id }}</h4>
+        <p><strong>Appointment ID:</strong> {{ prescription.appointment.appointment_id }}</p>
+        <p><strong>Appointment Date:</strong> {{ prescription.appointment.appointment_date }}</p>
+        <p><strong>Doctor:</strong> {{ prescription.appointment.doctor }}</p>
+        <p><strong>Patient:</strong> {{ prescription.appointment.patient }}</p>
+        <p><strong>Notes:</strong> {{ prescription.notes|default:"N/A" }}</p>
+        <h5 class="mt-3"><strong>Medicines:</strong></h5>
+        <ul>
+            {% for medicine in prescription.medicines.all %}
+            <li>{{ medicine.name }} ({{ medicine.dosage }}) - {{ medicine.instructions|default:"N/A" }}</li>
+            {% endfor %}
+        </ul>
+        <button id="print" class="btn btn-primary mt-4">Download Receipt</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script>
+    // Pass data from Django context to JavaScript as JSON
+    const prescriptionData = {
+        prescriptionId: "{{ prescription.prescription_id }}",
+        appointmentId: "{{ prescription.appointment.appointment_id }}",
+        appointmentDate: "{{ prescription.appointment.appointment_date }}",
+        doctor: "{{ prescription.appointment.doctor }}",
+        patient: "{{ prescription.appointment.patient }}",
+        notes: "{{ prescription.notes|default:'N/A' }}",
+        medicines: [
+            {% for medicine in prescription.medicines.all %}
+            {
+                name: "{{ medicine.name }}",
+                dosage: "{{ medicine.dosage }}",
+                instructions: "{{ medicine.instructions|default:'N/A' }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    };
+
+    document.getElementById('print').addEventListener('click', function () {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Add Header with Clinic Info
+        doc.setFontSize(20);
+        doc.setFont("helvetica", "bold");
+        doc.text("Clinic Name", 105, 15, null, null, "center");
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text("123 Health St, Wellness City", 105, 22, null, null, "center");
+        doc.text("Phone: (123) 456-7890 | Email: clinic@health.com", 105, 28, null, null, "center");
+        doc.text("-------------------------------------------------------------", 105, 34, null, null, "center");
+
+        // Prescription Details
+        let y = 40;
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Prescription Receipt", 105, y, null, null, "center");
+
+        y += 10;
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Prescription ID: ${prescriptionData.prescriptionId}`, 10, y);
+        y += 8;
+        doc.text(`Appointment ID: ${prescriptionData.appointmentId}`, 10, y);
+        y += 8;
+        doc.text(`Appointment Date: ${prescriptionData.appointmentDate}`, 10, y);
+        y += 8;
+        doc.text(`Doctor: ${prescriptionData.doctor}`, 10, y);
+        y += 8;
+        doc.text(`Patient: ${prescriptionData.patient}`, 10, y);
+
+        // Notes Section
+        y += 12;
+        doc.setFont("helvetica", "bold");
+        doc.text("Notes:", 10, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(`${prescriptionData.notes}`, 10, y + 8);
+
+        // Medicines Section
+        y += 16;
+        doc.setFont("helvetica", "bold");
+        doc.text("Medicines:", 10, y);
+        y += 8;
+        doc.setFont("helvetica", "normal");
+
+        prescriptionData.medicines.forEach(medicine => {
+            doc.text(`- ${medicine.name} (${medicine.dosage}) - ${medicine.instructions}`, 10, y);
+            y += 8;
+        });
+
+        // Footer
+        y += 12;
+        doc.text("-------------------------------------------------------------", 105, y, null, null, "center");
+        y += 8;
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "italic");
+        doc.text("This is a system-generated receipt. For any discrepancies, contact the clinic.", 105, y, null, null, "center");
+
+        // Save the PDF
+        doc.save(`Prescription_${prescriptionData.prescriptionId}.pdf`);
+    });
+</script>
+{% endblock %}
+

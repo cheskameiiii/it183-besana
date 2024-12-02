@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Appointments{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Appointments</h2>
+        <a href="{% url 'appointment_create' %}" class="btn btn-primary">Add Appointment</a>
+    </div>
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Doctor</th>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr>
+                <td>{{ appointment.appointment_id }}</td>
+                <td>{{ appointment.doctor }}</td>
+                <td>{{ appointment.patient }}</td>
+                <td>{{ appointment.appointment_date }}</td>
+                <td>{{ appointment.status }}</td>
+                <td>
+                    <a href="{% url 'appointment_update' appointment.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{% url 'appointment_delete' appointment.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                    <a href="{% url 'appointment_receipt' appointment.pk %}" class="btn btn-sm btn-info">Receipt</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

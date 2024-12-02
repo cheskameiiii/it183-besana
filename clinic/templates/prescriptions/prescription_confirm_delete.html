@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Prescription{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Are you sure you want to delete this prescription?</h2>
+    <p><strong>Appointment:</strong> {{ prescription.appointment }}</p>
+    <p><strong>Medicines:</strong></p>
+    <ul>
+        {% for medicine in prescription.medicines.all %}
+            <li>{{ medicine.name }} ({{ medicine.dosage }})</li>
+        {% endfor %}
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'prescription_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
